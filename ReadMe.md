@@ -1,4 +1,5 @@
-Team Members:
-Himanshu Kumar
-Hrishi Shekhar
-Ishwari Rajendra Umak
+# Team Members:
+
+- Himanshu Kumar
+- Hrishi Shekhar
+- Ishwari Rajendra Umak
