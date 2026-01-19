@@ -31,11 +31,11 @@
 
 ## Associations
 
-- Developer → Push Source Code
-- Developer → Monitor Logs
-- Developer → Receive Notifications
-- GitHub → Trigger CI/CD Pipeline
-- AWS EC2 → Deploy Application
+- Developer -> Push Source Code
+- Developer -> Monitor Logs
+- Developer -> Receive Notifications
+- GitHub -> Trigger CI/CD Pipeline
+- AWS EC2 -> Deploy Application
 
 ## Include Relationships
 
