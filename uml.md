@@ -9,3 +9,13 @@
 | AWS EC2 Server                      | Hosts deployed application                |
 | AI Failure Classifier               | Classifies failures using ML or rules     |
 | Notification Service                | Sends alerts to users                     |
+
+# Use Case Relationships
+
+## Associations
+
+- Developer → Push Source Code
+
+
+
+
