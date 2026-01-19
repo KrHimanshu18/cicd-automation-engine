@@ -10,6 +10,14 @@
 | AI Failure Classifier               | Classifies failures using ML or rules     |
 | Notification Service                | Sends alerts to users                     |
 
+# Use Cases
+
+| Use Case | Description |
+| --- | --- |
+| Push Source Code | Developer pushes code to GitHub |
+
+
+
 # Use Case Relationships
 
 ## Associations
