@@ -15,6 +15,8 @@
 ## Associations
 
 - Developer → Push Source Code
+- Developer → Monitor Logs
+- Developer → Receive Notifications
 
 
 
