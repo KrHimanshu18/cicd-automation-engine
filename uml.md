@@ -15,7 +15,7 @@
 | Use Case | Description |
 | --- | --- |
 | Push Source Code | Developer pushes code to GitHub |
-
+| Trigger CI/CD Pipeline | Pipeline starts automatically on commit |
 
 
 # Use Case Relationships
