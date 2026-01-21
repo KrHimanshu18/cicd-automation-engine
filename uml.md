@@ -16,6 +16,8 @@
 | --- | --- |
 | Push Source Code | Developer pushes code to GitHub |
 | Trigger CI/CD Pipeline | Pipeline starts automatically on commit |
+| Build Application | Compiles source code |
+| Run Automated Tests | Executes test cases and generates reports |
 
 
 # Use Case Relationships
