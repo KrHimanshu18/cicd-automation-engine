@@ -20,6 +20,9 @@
 - GitHub → Trigger CI/CD Pipeline
 - AWS EC2 → Deploy Application
 
+## Include Relationships
 
+- Deploy Application **includes** Build Docker Image
+- Detect Failure **includes** Monitor Logs
 
 
