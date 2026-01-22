@@ -18,7 +18,9 @@
 | Trigger CI/CD Pipeline | Pipeline starts automatically on commit |
 | Build Application | Compiles source code |
 | Run Automated Tests | Executes test cases and generates reports |
-
+| Build Docker Image | Creates Docker container |
+| Deploy Application | Deploys container to AWS EC2 |
+    
 
 # Use Case Relationships
 
