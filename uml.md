@@ -20,7 +20,9 @@
 | Run Automated Tests | Executes test cases and generates reports |
 | Build Docker Image | Creates Docker container |
 | Deploy Application | Deploys container to AWS EC2 |
-    
+| Monitor Logs & Status | Tracks logs and runtime health |
+| Detect Failure | Identifies build/test/deploy/runtime errors |
+
 
 # Use Case Relationships
 
