@@ -24,5 +24,6 @@
 
 - Deploy Application **includes** Build Docker Image
 - Detect Failure **includes** Monitor Logs
+- Apply Recovery Action **includes** Classify Failure
 
 
