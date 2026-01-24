@@ -26,4 +26,7 @@
 - Detect Failure **includes** Monitor Logs
 - Apply Recovery Action **includes** Classify Failure
 
+## Extend Relationships
 
+- Rollback Deployment **extends** Deploy Application *(only if deployment fails)*
+- Notify User **extends** Detect Failure *(only when failure occurs)*
