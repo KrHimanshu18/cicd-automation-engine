@@ -22,6 +22,8 @@
 | Deploy Application | Deploys container to AWS EC2 |
 | Monitor Logs & Status | Tracks logs and runtime health |
 | Detect Failure | Identifies build/test/deploy/runtime errors |
+| Classify Failure | Determines failure type using AI/rules |
+| Apply Recovery Action | Retries build, fixes config, or redeploys |
 
 
 # Use Case Relationships
