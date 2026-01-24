@@ -1,9 +1,21 @@
 # UML FILE
 
 # Overview
-Core Workflow-
-A Developer pushes source code to GitHub.
-This automatically triggers the CI/CD pipeline.
+## Core Workflow-
+- A Developer pushes source code to GitHub.
+- This automatically triggers the CI/CD pipeline.
+
+## The pipeline:
+
+- Builds the application
+
+- Runs automated tests
+
+- Builds a Docker image
+
+- Deploys the container to AWS EC2
+
+- The system monitors logs and runtime status throughout execution.
 
 # Actors
 
