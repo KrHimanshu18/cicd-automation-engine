@@ -8,3 +8,4 @@
 | Docker Engine                       | Builds Docker images                      |
 | AWS EC2 Server                      | Hosts deployed application                |
 | AI Failure Classifier               | Classifies failures using ML or rules     |
+| Notification Service                | Sends alerts to users                     |
