@@ -1,7 +1,9 @@
 # UML FILE
 
 # Overview
+
 ## Core Workflow-
+
 - A Developer pushes source code to GitHub.
 - This automatically triggers the CI/CD pipeline.
 
@@ -16,6 +18,19 @@
 - Deploys the container to AWS EC2
 
 - The system monitors logs and runtime status throughout execution.
+
+## Failure Handling & Recovery
+
+- If an issue is detected, the system:
+  - Detects failures by monitoring logs and health signals
+
+  - Classifies the failure using an AI or rule-based classifier
+
+  - Applies recovery actions such as retrying builds, fixing configurations, redeploying, or rolling back
+
+- Rollback deployment occurs only when a deployment failure happens.
+
+- Notifications are sent to the developer only when failures are detected.
 
 # Actors
 
