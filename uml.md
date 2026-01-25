@@ -24,7 +24,8 @@
 | Detect Failure | Identifies build/test/deploy/runtime errors |
 | Classify Failure | Determines failure type using AI/rules |
 | Apply Recovery Action | Retries build, fixes config, or redeploys |
-
+| Rollback Deployment | Reverts to last stable version |
+| Notify User | Sends failure and recovery notifications |
 
 # Use Case Relationships
 
