@@ -26,7 +26,7 @@
 | CI/CD Tool (GitHub Actions/Jenkins) | Executes pipeline stages                  |
 | Docker Engine                       | Builds Docker images                      |
 | AWS EC2 Server                      | Hosts deployed application                |
-| AI Failure Classifier               | Classifies failures using ML or rules     |
+| AI Failure Classifier               | Classifies failures using ML rules        |
 | Notification Service                | Sends alerts to users                     |
 
 # Use Cases
