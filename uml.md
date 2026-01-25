@@ -1,31 +1,31 @@
 # Actors
 
-| Actor                               | Description                               |
-| ----------------------------------- | ----------------------------------------- |
-| Developer                           | Pushes code and monitors pipeline results |
-| GitHub                              | Hosts the source code repository          |
-| CI/CD Tool (GitHub Actions/Jenkins) | Executes pipeline stages                  |
-| Docker Engine                       | Builds Docker images                      |
-| AWS EC2 Server                      | Hosts deployed application                |
-| AI Failure Classifier               | Classifies failures using ML or rules     |
-| Notification Service                | Sends alerts to users                     |
+| Actor                               | Description                                   |
+| ----------------------------------- | ----------------------------------------------|
+| Developer                           | Pushes code and monitors pipeline results     |
+| GitHub                              | Hosts the source code repository              |
+| CI/CD Tool (GitHub Actions/Jenkins) | Executes pipeline stages                      |
+| Docker Engine                       | Builds Docker images                          |
+| AWS EC2 Server                      | Hosts deployed application                    |
+| AI Failure Classifier               | Classifies failures using ML or rules         |
+| Notification Service                | Sends alerts to users                         |
 
 # Use Cases
 
-| Use Case | Description |
-| --- | --- |
-| Push Source Code | Developer pushes code to GitHub |
-| Trigger CI/CD Pipeline | Pipeline starts automatically on commit |
-| Build Application | Compiles source code |
-| Run Automated Tests | Executes test cases and generates reports |
-| Build Docker Image | Creates Docker container |
-| Deploy Application | Deploys container to AWS EC2 |
-| Monitor Logs & Status | Tracks logs and runtime health |
-| Detect Failure | Identifies build/test/deploy/runtime errors |
-| Classify Failure | Determines failure type using AI/rules |
-| Apply Recovery Action | Retries build, fixes config, or redeploys |
-| Rollback Deployment | Reverts to last stable version |
-| Notify User | Sends failure and recovery notifications |
+| Use Case                            | Description                                   |
+| ----------------------------------- | ----------------------------------------------|
+| Push Source Code                    | Developer pushes code to GitHub               |
+| Trigger CI/CD Pipeline              | Pipeline starts automatically on commit       |
+| Build Application                   | Compiles source code                          |
+| Run Automated Tests                 | Executes test cases and generates reports     |
+| Build Docker Image                  | Creates Docker container                      |
+| Deploy Application                  | Deploys container to AWS EC2                  |
+| Monitor Logs & Status               | Tracks logs and runtime health                |
+| Detect Failure                      | Identifies build/test/deploy/runtime errors   |
+| Classify Failure                    | Determines failure type using AI/rules        |
+| Apply Recovery Action               | Retries build, fixes config, or redeploys     |
+| Rollback Deployment                 | Reverts to last stable version                |
+| Notify User                         | Sends failure and recovery notifications      |
 
 # Use Case Relationships
 
