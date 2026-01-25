@@ -1,5 +1,10 @@
 # UML FILE
 
+# Overview
+Core Workflow-
+A Developer pushes source code to GitHub.
+This automatically triggers the CI/CD pipeline.
+
 # Actors
 
 | Actor                               | Description                               |
