@@ -8,6 +8,9 @@ class AIFailureClassifier {
         else if (log.contains("TEST FAILED")) {
             return "Test Failure";
         } 
+        else if (log.contains("DEPLOY ERROR")) {
+            return "Deployment Failure";
+        } 
         
         else {
             return "Unknown Failure";
