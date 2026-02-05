@@ -1,5 +1,6 @@
 Class: CICDPipeline
-Description:Main class that controls the complete CI/CD process.
+
+Description: Main class that controls the complete CI/CD process.
 
 Attributes:
 
@@ -21,17 +22,27 @@ Methods:
 
 + getStatus() : String
 
+- handleFailure() : void
+
 
 Class: BuildService
 
-Description: Responsible for building the application.
+Description: Responsible for building the application and generating Docker images.
 
-Attributes:
+ Attributes:
+
+- buildId : String
 
 - buildStatus : String
 
-Methods:
+- dockerEngine : DockerEngine
 
-+ buildProject() : boolean
+ Methods:
 
-+ generateBuildReport() : String
++ buildApplication(sourcePath : String) : boolean
+
++ buildDockerImage(imageName : String) : boolean
+
++ getBuildStatus() : String
+
+- validateBuild() : boolean
