@@ -11,7 +11,9 @@ class AIFailureClassifier {
         else if (log.contains("DEPLOY ERROR")) {
             return "Deployment Failure";
         } 
-        
+        else if (log.contains("RUNTIME EXCEPTION")) {
+            return "Runtime Failure";
+        } 
         else {
             return "Unknown Failure";
         }
