@@ -91,3 +91,48 @@ Methods:
 + getDeploymentStatus() : String
 
 - verifyDeployment() : boolean
+
+
+MonitoringService
+
+ Description: Monitors logs and system status.
+
+Attributes:
+
+- logs : List<String>
+
+- systemHealthStatus : String
+
+- errorLogs : List<String>
+
+Methods:
+
++ monitorLogs() : void
+
++ detectFailure() : boolean
+
++ getSystemStatus() : String
+
+- analyzeLogs() : void
+
+FailureHandler
+
+ Description: Core intelligent recovery component. Integrates with AI Failure Classifier.
+
+ Attributes:
+
+- failureType : String
+
+- classifier : AIFailureClassifier
+
+- recoveryStrategy : RecoveryStrategy
+
+ Methods:
+
++ classifyFailure(logs : List<String>) : String
+
++ applyRecoveryAction(failureType : String) : void
+
++ triggerRollback() : void
+
+- selectRecoveryStrategy() : void
