@@ -1,5 +1,4 @@
 Class: CICDPipeline
-
 Description: Main class that controls the complete CI/CD process.
 
 Attributes:
@@ -20,119 +19,90 @@ Methods:
 
 + handleFailure() : void
 
-+ getStatus() : String
-
-- handleFailure() : void
-
 
 Class: BuildService
+Description: Responsible for building the application.
 
-Description: Responsible for building the application and generating Docker images.
-
- Attributes:
-
-- buildId : String
+Attributes:
 
 - buildStatus : String
 
-- dockerEngine : DockerEngine
+Methods:
 
- Methods:
++ buildProject() : boolean
 
-+ buildApplication(sourcePath : String) : boolean
-
-+ buildDockerImage(imageName : String) : boolean
-
-+ getBuildStatus() : String
-
-- validateBuild() : boolean
-
-TestService
-
-Description: Runs automated tests after build stage.
-
- Attributes:
-
-- testSuiteName : String
-
-- testResults : Map<String, Boolean>
-
-- coveragePercentage : double
-
- Methods:
-
-+ runAutomatedTests() : boolean
-
-+ generateTestReport() : String
-
-+ getTestResults() : Map<String, Boolean>
-
-- validateTestEnvironment() : boolean
++ generateBuildReport() : String
 
 
-DeploymentService
-
-Description: Handles deployment to AWS EC2 or target server.
+Class: TestService
+Description: Runs automated tests.
 
 Attributes:
 
-- deploymentId : String
+- testStatus : String
+
+Methods:
+
++ runTests() : boolean
+
+
+Class: DeploymentService
+Description: Deploys application to server (like AWS EC2).
+
+Attributes:
 
 - deploymentStatus : String
 
-- serverIP : String
-
 Methods:
 
-+ deployApplication(imageName : String) : boolean
++ deploy() : boolean
 
-+ rollbackDeployment() : void
-
-+ getDeploymentStatus() : String
-
-- verifyDeployment() : boolean
++ rollback() : void
 
 
-MonitoringService
-
- Description: Monitors logs and system status.
+Class: FailureHandler
+Description: Handles failure and recovery actions.
 
 Attributes:
 
-- logs : List<String>
-
-- systemHealthStatus : String
-
-- errorLogs : List<String>
+- failureType : String
 
 Methods:
 
-+ monitorLogs() : void
++ classifyFailure(log : String) : String
 
-+ detectFailure() : boolean
++ applyRecoveryAction() : void
 
-+ getSystemStatus() : String
 
-- analyzeLogs() : void
+Class: AIFailureClassifier
+Description: Classifies the failure using AI model.
 
-FailureHandler
+Attributes:
 
- Description: Core intelligent recovery component. Integrates with AI Failure Classifier.
+- modelName : String
 
- Attributes:
+Methods:
 
-- failureType : String
++ predictFailure(log : String) : String
 
-- classifier : AIFailureClassifier
 
-- recoveryStrategy : RecoveryStrategy
+Class: Developer
 
- Methods:
+Description: Represents the user who pushes code.
 
-+ classifyFailure(logs : List<String>) : String
+Attributes:
 
-+ applyRecoveryAction(failureType : String) : void
+- name : String
 
-+ triggerRollback() : void
+- email : String
 
-- selectRecoveryStrategy() : void
+Methods:
+
++ pushCode() : void
+
+
+Visibility Symbols Used
+
++ → Public
+
+- → Private
