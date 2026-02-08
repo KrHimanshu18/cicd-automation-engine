@@ -1,0 +1,13 @@
+{
+  "name": "cicd-node-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest",
+    "build": "node -c src/app.js"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
