@@ -1,3 +1,18 @@
+## I.A I. Chosen Software Architecture Style
+
+### Microservices Architecture
+
+### Justification for Choosing Microservices Architecture
+
+-System is divided into small, independent services
+
+-Each service performs a specific function
+
+-Services communicate using APIs
+
+-Each service can be deployed independently
+
+
 ## I.B. Justification of Architecture Style Choice  
 
 ### Why Microservices is the Best Fit?
