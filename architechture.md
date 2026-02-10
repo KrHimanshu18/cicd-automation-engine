@@ -9,6 +9,16 @@
 - Services communicate using APIs
 - Each service can be deployed independently
 
+### 2.How Our Project Fits Microservices Architecture
+Our Project is divided into separate functional components, such as:
+- Build Service
+- Test Service
+- Deployment Service
+- Monitoring Service
+- Failure Handler Service
+- AI Failure Classifier Service
+- Notification Service
+
 
 
 ## I.B. Justification of Architecture Style Choice  
