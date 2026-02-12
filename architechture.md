@@ -13,3 +13,7 @@
   - AI Failure Classification Service
   - Notification Service
 - Teams can modify or upgrade individual services without impacting the entire system.
+
+### 3. Fault Isolation & Reliability
+- Failure in one service (e.g., AI classifier) does not crash the CI pipeline.
+- Enables graceful degradation (pipeline can continue with rule-based handling if AI service fails).
