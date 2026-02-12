@@ -19,6 +19,11 @@ Our Project is divided into separate functional components, such as:
 - AI Failure Classifier Service
 - Notification Service
 
+#### Each of these:
+- Has its own responsibility
+- Can work independently
+- Can be scaled separately
+- Communicates with the main pipeline
 
 
 ## I.B. Justification of Architecture Style Choice  
