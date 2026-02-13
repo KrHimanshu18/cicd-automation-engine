@@ -25,6 +25,12 @@ Our Project is divided into separate functional components, such as:
 - Can be scaled separately
 - Communicates with the main pipeline
 
+### 3. Granularity of Software Components
+- Granularity = size and responsibility of components.
+#### In our system:
+- Fine-Grained Services (High Granularity)
+- Each service performs one specific task ,BuildService will only build projects, TestService will only run tests.
+- This shows high cohesion and low coupling, which is a key feature of Microservices Architecture.
 
 ## I.B. Justification of Architecture Style Choice  
 
