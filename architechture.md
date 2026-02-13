@@ -17,3 +17,8 @@
 ### 3. Fault Isolation & Reliability
 - Failure in one service (e.g., AI classifier) does not crash the CI pipeline.
 - Enables graceful degradation (pipeline can continue with rule-based handling if AI service fails).
+
+### 4. Performance
+- Asynchronous communication between services (e.g., logs → classifier → notifier) reduces blocking.
+- Parallel processing of build/test/monitoring improves pipeline throughput.
+
