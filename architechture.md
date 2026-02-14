@@ -22,3 +22,6 @@
 - Asynchronous communication between services (e.g., logs → classifier → notifier) reduces blocking.
 - Parallel processing of build/test/monitoring improves pipeline throughput.
 
+### 5. Technology Flexibility
+- Different services can use different tech stacks (e.g., Node.js for CI orchestration, Python for AI model).
+- Easier to integrate third-party services (GitHub Actions, Docker, AWS).
