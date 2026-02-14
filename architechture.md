@@ -32,6 +32,13 @@ Our Project is divided into separate functional components, such as:
 - Each service performs one specific task ,BuildService will only build projects, TestService will only run tests.
 - This shows high cohesion and low coupling, which is a key feature of Microservices Architecture.
 
+### 4. Communication Between Services
+- Services interact through method calls / API calls
+- FailureHandler communicates with AI Classifier
+- CICDPipeline coordinates all services
+- This matches Microservices communication style.
+
+
 ## I.B. Justification of Architecture Style Choice  
 
 ### Why Microservices is the Best Fit?
