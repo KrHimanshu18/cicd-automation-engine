@@ -25,3 +25,7 @@
 ### 5. Technology Flexibility
 - Different services can use different tech stacks (e.g., Node.js for CI orchestration, Python for AI model).
 - Easier to integrate third-party services (GitHub Actions, Docker, AWS).
+
+### 6. Deployment & Evolution
+- Independent deployment of services allows faster iteration and updates.
+- Supports incremental enhancements (e.g., upgrading AI model without redeploying the entire system).
