@@ -103,6 +103,6 @@ Methods:
 
 Visibility Symbols Used
 
-+ → Public
++ -> Public
 
-- → Private
+- -> Private
