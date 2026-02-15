@@ -3,7 +3,6 @@
 ### Microservices Architecture
 
 ### 1.Justification for Choosing Microservices Architecture
-
 - System is divided into small, independent services
 - Each service performs a specific function
 - Services communicate using APIs
@@ -37,6 +36,13 @@ Our Project is divided into separate functional components, such as:
 - FailureHandler communicates with AI Classifier
 - CICDPipeline coordinates all services
 - This matches Microservices communication style.
+
+### 5. Why Not Monolithic Architecture?
+- In monolithic architecture, everything is inside one single system.
+- In our project, services are logically separated.
+- Each service can evolve independently.
+
+Therefore, it is not monolithic, but microservices-based.
 
 
 ## I.B. Justification of Architecture Style Choice  
