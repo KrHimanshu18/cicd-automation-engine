@@ -44,3 +44,22 @@
 - Hosted on **AWS EC2**
 - Sends alerts via Email/Slack API
 
+## 2. Deployment Strategy 
+
+1. **Code Push**
+   - Developer pushes code to GitHub.
+   - GitHub triggers CI/CD Orchestrator.
+
+2. **Build & Test**
+   - GitHub Actions runner installs dependencies.
+   - Automated tests are executed.
+   - If tests fail → pipeline stops.
+
+3. **Docker Image Creation**
+   - Docker image built using Dockerfile.
+   - Image pushed to container registry.
+
+4. **Deployment to AWS EC2**
+   - CI connects to EC2 via SSH.
+   - Pulls latest Docker image.
+   - Runs container using Docker.
