@@ -63,3 +63,18 @@
    - CI connects to EC2 via SSH.
    - Pulls latest Docker image.
    - Runs container using Docker.
+   
+5. **Log Monitoring**
+   - Log Monitoring Service collects container logs.
+   - Logs sent to Failure Detection Module.
+
+6. **AI Failure Classification**
+   - Failure Detection Module sends logs via REST API.
+   - AI service predicts failure type.
+
+7. **Recovery & Rollback**
+   - Recovery Manager restarts container or rolls back to stable version.
+
+8. **Notification**
+   - Notification Service alerts developer with failure/recovery status.
+
