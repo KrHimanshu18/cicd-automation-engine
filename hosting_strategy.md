@@ -63,7 +63,7 @@
    - CI connects to EC2 via SSH.
    - Pulls latest Docker image.
    - Runs container using Docker.
-   
+
 5. **Log Monitoring**
    - Log Monitoring Service collects container logs.
    - Logs sent to Failure Detection Module.
@@ -77,4 +77,17 @@
 
 8. **Notification**
    - Notification Service alerts developer with failure/recovery status.
+
+## 3. Server Configuration
+
+### AWS EC2 Setup
+- Ubuntu 22.04 LTS
+- Docker Engine installed
+- Node.js runtime installed
+- Ports 80/443 open via Security Groups
+- SSH access using key-based authentication
+
+### CI Environment
+- GitHub-hosted Ubuntu runner
+- Node.js and Docker configured in workflow
 
