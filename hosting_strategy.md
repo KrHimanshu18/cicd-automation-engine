@@ -91,3 +91,13 @@
 - GitHub-hosted Ubuntu runner
 - Node.js and Docker configured in workflow
 
+## 4. API Communication Between Components
+
+- REST APIs used for service interaction:
+  - Log Monitoring → Failure Detection
+  - Failure Detection → AI Classification
+  - AI Classification → Recovery Manager
+  - Recovery Manager → Notification Service
+- JSON used for data exchange
+- Internal communication secured via private EC2 network
+
