@@ -101,3 +101,12 @@
 - JSON used for data exchange
 - Internal communication secured via private EC2 network
 
+## 5. Security Measures
+
+- HTTPS for API communication
+- AWS Security Groups to restrict inbound traffic
+- SSH key-based login (no password authentication)
+- GitHub Secrets for storing AWS credentials and API keys
+- Docker container isolation for service separation
+
+
