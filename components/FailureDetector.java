@@ -3,13 +3,9 @@ public class FailureDetector {
 
     public static void main(String[] args) {
 
-        String logMessage = "Build failed due to syntax error";
+        Classifier classifier = new Classifier();
 
-        // Create classifier object
-        AIFailureClassifier classifier = new AIFailureClassifier();
-
-        // Send log to classifier
-        String result = classifier.classify(logMessage);
+        String result = classifier.classify();
 
         System.out.println("Detected Failure Type: " + result);
     }
