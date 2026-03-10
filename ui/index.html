@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CI/CD Automation Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f9;
+      color: #222;
+    }
+
+    header {
+      background: #1f3c88;
+      color: white;
+      padding: 18px 30px;
+      text-align: center;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 25px auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #1f3c88;
+    }
+
+    .status {
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .running {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    button {
+      margin: 8px 8px 0 0;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #1f3c88;
+      color: white;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #16306d;
+    }
+
+    .secondary {
+      background: #6c757d;
+    }
+
+    .secondary:hover {
+      background: #545b62;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .log-box {
+      background: #111;
+      color: #00ff99;
+      padding: 12px;
+      border-radius: 8px;
+      min-height: 120px;
+      white-space: pre-line;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CI/CD Automation with AI Failure Handling</h1>
+    <p>Developer Dashboard</p>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2>Pipeline Status</h2>
+        <p>Build: <span id="buildStatus" class="status success">Success</span></p>
+        <p>Test: <span id="testStatus" class="status failed">Failed</span></p>
+        <p>Deploy: <span id="deployStatus" class="status pending">Pending</span></p>
+      </div>
+
+      <div class="card">
+        <h2>Failure Details</h2>
+        <p><strong>Error:</strong> <span id="errorText">Unit test case failed in authentication module.</span></p>
+        <p><strong>AI Classification:</strong> <span id="aiClass">Test Failure</span></p>
+      </div>
+
+      <div class="card">
+        <h2>Recovery Actions</h2>
+        <button onclick="retryBuild()">Retry Build</button>
+        <button onclick="rollbackDeploy()">Rollback Deployment</button>
+        <button class="secondary" onclick="restartService()">Restart Service</button>
+      </div>
+
+      <div class="card">
+        <h2>Notifications</h2>
+        <ul id="notifications">
+          <li>Pipeline triggered from GitHub push.</li>
+          <li>Build completed successfully.</li>
+          <li>Test stage failed. Email alert sent to developer.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="grid-column: 1 / -1;">
+        <h2>Execution Logs</h2>
+        <div class="log-box" id="logBox">
+[INFO] Code pushed to GitHub
+[INFO] CI pipeline started
+[INFO] Build completed successfully
+[ERROR] Test failed in auth.test.js
+[INFO] Awaiting developer recovery action
+        </div>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      This dashboard is a prototype UI for monitoring pipeline execution, AI-based failure classification, and recovery handling.
+    </p>
+  </div>
+
+  <script>
+    function addNotification(message) {
+      const notifications = document.getElementById("notifications");
+      const item = document.createElement("li");
+      item.textContent = message;
+      notifications.appendChild(item);
+    }
+
+    function appendLog(message) {
+      const logBox = document.getElementById("logBox");
+      logBox.textContent += "\n" + message;
+    }
+
+    function setStatus(id, text, cls) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = "status " + cls;
+    }
+
+    function retryBuild() {
+      setStatus("buildStatus", "Running", "running");
+      setStatus("testStatus", "Pending", "pending");
+      setStatus("deployStatus", "Pending", "pending");
+
+      appendLog("[ACTION] Retry Build clicked");
+      appendLog("[INFO] Re-running build...");
+
+      addNotification("Developer selected Retry Build.");
+
+      setTimeout(() => {
+        setStatus("buildStatus", "Success", "success");
+        setStatus("testStatus", "Success", "success");
+        setStatus("deployStatus", "Success", "success");
+
+        document.getElementById("errorText").textContent = "No active error.";
+        document.getElementById("aiClass").textContent = "Resolved";
+
+        appendLog("[INFO] Build successful");
+        appendLog("[INFO] Tests passed");
+        appendLog("[INFO] Deployment completed successfully");
+
+        addNotification("Pipeline recovered successfully after retry.");
+      }, 2000);
+    }
+
+    function rollbackDeploy() {
+      setStatus("deployStatus", "Running", "running");
+      appendLog("[ACTION] Rollback Deployment clicked");
+      appendLog("[INFO] Rolling back to last stable version...");
+      addNotification("Rollback initiated by developer.");
+
+      setTimeout(() => {
+        setStatus("deployStatus", "Success", "success");
+        document.getElementById("errorText").textContent = "Deployment restored to stable version.";
+        document.getElementById("aiClass").textContent = "Deployment Failure Resolved";
+
+        appendLog("[INFO] Rollback completed successfully");
+        addNotification("Rollback completed successfully.");
+      }, 2000);
+    }
+
+    function restartService() {
+      appendLog("[ACTION] Restart Service clicked");
+      appendLog("[INFO] Restarting failed service...");
+      addNotification("Service restart initiated.");
+
+      setTimeout(() => {
+        document.getElementById("errorText").textContent = "Service restarted successfully.";
+        document.getElementById("aiClass").textContent = "Runtime Failure Resolved";
+
+        appendLog("[INFO] Service restarted successfully");
+        addNotification("Service restarted successfully.");
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
