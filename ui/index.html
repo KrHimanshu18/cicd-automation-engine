@@ -237,19 +237,7 @@
       }, 2000);
     }
 
-    function restartService() {
-      appendLog("[ACTION] Restart Service clicked");
-      appendLog("[INFO] Restarting failed service...");
-      addNotification("Service restart initiated.");
-
-      setTimeout(() => {
-        document.getElementById("errorText").textContent = "Service restarted successfully.";
-        document.getElementById("aiClass").textContent = "Runtime Failure Resolved";
-
-        appendLog("[INFO] Service restarted successfully");
-        addNotification("Service restarted successfully.");
-      }, 1500);
-    }
+    
   </script>
 </body>
 </html>
