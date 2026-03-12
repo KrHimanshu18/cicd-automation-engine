@@ -5,7 +5,12 @@
 
 ## Justification
 
-# Accessibility:
+### Accessibility:
 - Accessible through any web browser
 - No installation required
 - Can be used across different devices
+
+### Menu-based Navigation:
+- Features grouped into structured menus
+- Easy access to system functions
+- Reduces the need to remember commands
