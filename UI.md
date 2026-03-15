@@ -25,3 +25,11 @@
 - Dashboard layout for organized display
 - Use of charts, tables, and summary panels
 - Helps users quickly understand system data
+
+### User Familiarity:
+- Similar to many modern web applications
+- Reduces learning curve for new users
+
+### Scalability:
+- New features can be added easily
+- Menu and dashboard components can be expanded without redesigning the UI
