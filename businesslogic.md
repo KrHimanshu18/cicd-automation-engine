@@ -24,10 +24,32 @@ Business rules in our CI/CD automation system define how different components be
 - Pipeline halts automatically if any step fails (exit != 0).
 
 ## 3. Docker & Deployment Module
-### Business Rules
+### Rules
 - Only successful builds are eligible for containerization.
 - Deployment is allowed only for stable and validated builds.
 - Versioning must follow predefined naming conventions.
 ### Implementation
 - Docker build executed conditionally after successful build/test.
 - Deployment scripts verify: Build status, Target environment (development/staging/production).
+
+## 4. Monitoring & Failure Detection Module
+### Rules
+- System logs must be continuously monitored
+- Failures are detected based on:Error patterns in logs,
+Threshold breaches (CPU usage, memory, crash frequency).
+### Implementation
+- Log monitoring tools collect and analyze system logs.
+- Pattern matching using regular expressions (regex).
+- Threshold-based alerts for anomaly detection.
+
+## 5. AI Failure Classification Module
+###  Rules
+- Failures must be categorized into types: \
+->Build errors\
+->Runtime errors\
+->Infrastructure issues
+- Similar past failures should map to known categories.
+### Implementation
+- Machine Learning model processes logs and error messages.
+- Uses classification techniques (e.g., NLP-based models).
+- Outputs failure category for further action.
