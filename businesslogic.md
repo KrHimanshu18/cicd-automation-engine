@@ -55,7 +55,7 @@ Threshold breaches (CPU usage, memory, crash frequency).
 - Outputs failure category for further action.
 
 ## 6. Recovery & Rollback Module
-### Business Rules
+### Rules
 - Critical failures trigger automatic rollback.
 - Non-critical failures allow retry mechanisms.
 - System must restore the last stable version during rollback.
@@ -66,7 +66,7 @@ Threshold breaches (CPU usage, memory, crash frequency).
 - Maintains deployment history for restoring stable states.
 
 ## 7. Notification Module
-### Business Rules
+### Rules
 - Stakeholders must be notified on failure or recovery events.
 - Critical failures require immediate alerts.
 - Notifications must include relevant logs and error details.
