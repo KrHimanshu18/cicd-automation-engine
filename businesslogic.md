@@ -53,3 +53,25 @@ Threshold breaches (CPU usage, memory, crash frequency).
 - Machine Learning model processes logs and error messages.
 - Uses classification techniques (e.g., NLP-based models).
 - Outputs failure category for further action.
+
+## 6. Recovery & Rollback Module
+### Business Rules
+- Critical failures trigger automatic rollback.
+- Non-critical failures allow retry mechanisms.
+- System must restore the last stable version during rollback.
+### Implementation
+- Rule-based decision logic:\
+ -> If failure is critical → Rollback\
+-> Else → Retry deployment
+- Maintains deployment history for restoring stable states.
+
+## 7. Notification Module
+### Business Rules
+- Stakeholders must be notified on failure or recovery events.
+- Critical failures require immediate alerts.
+- Notifications must include relevant logs and error details.
+### Implementation
+- Integrated with communication services (Email, Slack APIs)
+- Triggered based on:\
+-> Failure severity\
+-> Recovery status
