@@ -37,3 +37,22 @@ Validation logic ensures that the data entering the system is correct, consisten
 - Testing frameworks (JUnit, PyTest) validate functionality.
 - Failed test cases stop further execution.
 - Coverage tools enforce quality standards.
+
+## 4. Docker & Deployment Validation
+###  Rules
+- Docker image must be built successfully.
+- Image tags must follow naming conventions.
+- Deployment environment must be valid.
+### Implementation
+- Docker build process validates image creation.
+- Scripts check environment variables and configurations.
+- Deployment proceeds only if validation passes.
+
+## 5. Monitoring Data Validation
+###  Rules
+- Logs must be properly formatted.
+- Metrics (CPU, memory, errors) must be within acceptable ranges.
+### Implementation
+- Log parsers validate structure and content.
+- Threshold checks detect abnormal values.
+- Invalid or missing data is flagged for review.
