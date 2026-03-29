@@ -56,3 +56,23 @@ Validation logic ensures that the data entering the system is correct, consisten
 - Log parsers validate structure and content.
 - Threshold checks detect abnormal values.
 - Invalid or missing data is flagged for review.
+
+## 6. AI Model Input Validation
+###  Rules
+- Input logs must be clean and structured.
+- No missing or corrupted data should be passed to the model.
+### Implementation
+- Preprocessing steps:\
+-> Remove noise from logs.\
+-> Normalize text data.\
+-> Ensures accurate classification of failures.
+
+## 7. Recovery & Rollback Validation
+###  Rules
+- A valid previous stable version must exist for rollback.
+- Recovery actions must not violate system constraints.
+### Implementation
+- Deployment history is checked before rollback.
+- System verifies availability of stable builds.
+- Prevents invalid recovery operations
+
