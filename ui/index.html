@@ -176,6 +176,8 @@
     </p>
   </div>
 
+  <script src="bll.js"></script>
+
   <script>
     function addNotification(message) {
       const notifications = document.getElementById("notifications");
@@ -196,60 +198,111 @@
     }
 
     function retryBuild() {
+
+      let decision = processPipeline("Success", "Success");
+
+      let failureType = classifyFailure("test failed");
+
+      let action = getRecoveryAction(failureType);
+
+      let notification = generateNotification("Developer selected Retry Build");
+
+      
       setStatus("buildStatus", "Running", "running");
       setStatus("testStatus", "Pending", "pending");
       setStatus("deployStatus", "Pending", "pending");
 
       appendLog("[ACTION] Retry Build clicked");
-      appendLog("[INFO] Re-running build...");
+      appendLog("[BLL] " + action + " initiated");
 
-      addNotification("Developer selected Retry Build.");
+      addNotification(notification);
 
       setTimeout(() => {
-        setStatus("buildStatus", "Success", "success");
-        setStatus("testStatus", "Success", "success");
-        setStatus("deployStatus", "Success", "success");
 
-        document.getElementById("errorText").textContent = "No active error.";
-        document.getElementById("aiClass").textContent = "Resolved";
+        if (decision === "Deploy") {
 
-        appendLog("[INFO] Build successful");
-        appendLog("[INFO] Tests passed");
-        appendLog("[INFO] Deployment completed successfully");
+          setStatus("buildStatus", "Success", "success");
+          setStatus("testStatus", "Success", "success");
+          setStatus("deployStatus", "Success", "success");
 
-        addNotification("Pipeline recovered successfully after retry.");
+          document.getElementById("errorText").textContent = "No active error.";
+          document.getElementById("aiClass").textContent = "Resolved";
+
+          appendLog("[INFO] Build successful");
+          appendLog("[INFO] Tests passed");
+          appendLog("[INFO] Deployment completed successfully");
+
+          addNotification(generateNotification("Pipeline recovered successfully"));
+        }
+
       }, 2000);
-    }
+  }
 
     function rollbackDeploy() {
+
+      let failureType = classifyFailure("deployment failed");
+
+      let action = getRecoveryAction(failureType);
+
+      let notification = generateNotification("Rollback initiated by developer");
+
       setStatus("deployStatus", "Running", "running");
+
       appendLog("[ACTION] Rollback Deployment clicked");
-      appendLog("[INFO] Rolling back to last stable version...");
-      addNotification("Rollback initiated by developer.");
+      appendLog("[BLL] " + action + " started");
+
+      addNotification(notification);
 
       setTimeout(() => {
-        setStatus("deployStatus", "Success", "success");
-        document.getElementById("errorText").textContent = "Deployment restored to stable version.";
-        document.getElementById("aiClass").textContent = "Deployment Failure Resolved";
 
-        appendLog("[INFO] Rollback completed successfully");
-        addNotification("Rollback completed successfully.");
+        if (action === "Rollback Deployment") {
+
+          setStatus("deployStatus", "Success", "success");
+
+          document.getElementById("errorText").textContent =
+            "Deployment restored to stable version.";
+
+          document.getElementById("aiClass").textContent =
+            "Deployment Failure Resolved";
+
+          appendLog("[INFO] Rollback completed successfully");
+
+          addNotification(generateNotification("Rollback completed successfully"));
+        }
+
       }, 2000);
-    }
+  }
 
     function restartService() {
+
+      let failureType = classifyFailure("runtime error");
+
+      let action = getRecoveryAction(failureType);
+
+      let notification = generateNotification("Service restart initiated");
+
       appendLog("[ACTION] Restart Service clicked");
-      appendLog("[INFO] Restarting failed service...");
-      addNotification("Service restart initiated.");
+      appendLog("[BLL] " + action + " executed");
+
+      addNotification(notification);
 
       setTimeout(() => {
-        document.getElementById("errorText").textContent = "Service restarted successfully.";
-        document.getElementById("aiClass").textContent = "Runtime Failure Resolved";
 
-        appendLog("[INFO] Service restarted successfully");
-        addNotification("Service restarted successfully.");
+        if (action === "Restart Service") {
+
+          document.getElementById("errorText").textContent =
+            "Service restarted successfully.";
+
+          document.getElementById("aiClass").textContent =
+            "Runtime Failure Resolved";
+
+          appendLog("[INFO] Service restarted successfully");
+
+          addNotification(generateNotification("Service restarted successfully"));
+        }
+
       }, 1500);
-    }
+  }
   </script>
 </body>
 </html>
