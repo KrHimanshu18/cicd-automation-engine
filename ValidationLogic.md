@@ -17,3 +17,23 @@ Validation logic ensures that the data entering the system is correct, consisten
       branches:
         - main
         - develop
+
+
+
+## 2. Build Validation
+###  Rules
+- Source code must compile successfully.
+- No syntax or dependency errors allowed.
+### Implementation
+- Build tools (Maven, Gradle, npm) validate code structure.
+- Compilation errors automatically fail the pipeline.
+- Dependency checks ensure required libraries are present.
+
+## 3. Test Validation
+###  Rules
+- All unit and integration tests must pass.
+- Code coverage must meet minimum thresholds.
+### Implementation
+- Testing frameworks (JUnit, PyTest) validate functionality.
+- Failed test cases stop further execution.
+- Coverage tools enforce quality standards.
