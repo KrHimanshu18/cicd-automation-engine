@@ -5,6 +5,7 @@ const bll = require("./bll"); // or correct path
 const app = express();
 app.use(express.json());
 
+app.get('/favicon.ico', (req, res) => res.sendStatus(204));
 // Serve UI
 app.use(express.static(path.join(__dirname)));
 
