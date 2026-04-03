@@ -7,6 +7,7 @@ Black box testing focuses on testing the system without knowing internal impleme
 
 Verify that user interactions correctly trigger backend operations and display appropriate responses.
 
+### Test Cases
 1.``` Button Click Functionality ```\
 Input: Click "Create Pipeline" button\
 Expected Output: API call to /pipeline is triggered\
@@ -23,3 +24,14 @@ Input: Backend not running\
 Expected Output:
 - UI shows error OR logs failure
 - No page crash
+
+
+## Database Testing (Backend)
+### Objective
+
+Ensure backend correctly interacts with MySQL database.
+
+### Test Cases
+1.``` Database Connection ```\
+Input: Start server\
+Expected Output: Successful connection (no "Access denied" error)
