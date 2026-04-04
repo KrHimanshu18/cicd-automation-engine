@@ -2,307 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CI/CD Automation Dashboard</title>
+
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+    body { font-family: Arial; margin: 0; background: #f4f6f9; }
+    header { background: #1f3c88; color: white; padding: 20px; text-align: center; }
 
-    body {
-      margin: 0;
-      background: #f4f6f9;
-      color: #222;
-    }
+    .container { width: 90%; margin: 20px auto; }
+    .card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
 
-    header {
-      background: #1f3c88;
-      color: white;
-      padding: 18px 30px;
-      text-align: center;
-    }
+    .status { padding: 5px 10px; border-radius: 5px; }
+    .success { background: #d4edda; }
+    .failed { background: #f8d7da; }
+    .running { background: #d1ecf1; }
+    .pending { background: #fff3cd; }
 
-    .container {
-      width: 90%;
-      max-width: 1100px;
-      margin: 25px auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 18px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 20px;
-      color: #1f3c88;
-    }
-
-    .status {
-      font-weight: bold;
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-top: 5px;
-    }
-
-    .success {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .failed {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .pending {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .running {
-      background: #d1ecf1;
-      color: #0c5460;
-    }
-
-    button {
-      margin: 8px 8px 0 0;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #1f3c88;
-      color: white;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: #16306d;
-    }
-
-    .secondary {
-      background: #6c757d;
-    }
-
-    .secondary:hover {
-      background: #545b62;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
+    button { padding: 10px; margin: 5px; cursor: pointer; }
 
     .log-box {
-      background: #111;
+      background: black;
       color: #00ff99;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 10px;
       min-height: 120px;
-      white-space: pre-line;
-      font-family: Consolas, monospace;
-      font-size: 14px;
-    }
-
-    .footer-note {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #555;
-      text-align: center;
+      font-family: monospace;
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>CI/CD Automation with AI Failure Handling</h1>
-    <p>Developer Dashboard</p>
-  </header>
 
-  <div class="container">
-    <div class="grid">
-      <div class="card">
-        <h2>Pipeline Status</h2>
-        <p>Build: <span id="buildStatus" class="status success">Success</span></p>
-        <p>Test: <span id="testStatus" class="status failed">Failed</span></p>
-        <p>Deploy: <span id="deployStatus" class="status pending">Pending</span></p>
-      </div>
+<header>
+  <h1>CI/CD Automation Dashboard</h1>
+</header>
 
-      <div class="card">
-        <h2>Failure Details</h2>
-        <p><strong>Error:</strong> <span id="errorText">Unit test case failed in authentication module.</span></p>
-        <p><strong>AI Classification:</strong> <span id="aiClass">Test Failure</span></p>
-      </div>
+<div class="container">
 
-      <div class="card">
-        <h2>Recovery Actions</h2>
-        <button onclick="retryBuild()">Retry Build</button>
-        <button onclick="rollbackDeploy()">Rollback Deployment</button>
-        <button class="secondary" onclick="restartService()">Restart Service</button>
-      </div>
-
-      <div class="card">
-        <h2>Notifications</h2>
-        <ul id="notifications">
-          <li>Pipeline triggered from GitHub push.</li>
-          <li>Build completed successfully.</li>
-          <li>Test stage failed. Email alert sent to developer.</li>
-        </ul>
-      </div>
-
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2>Execution Logs</h2>
-        <div class="log-box" id="logBox">
-[INFO] Code pushed to GitHub
-[INFO] CI pipeline started
-[INFO] Build completed successfully
-[ERROR] Test failed in auth.test.js
-[INFO] Awaiting developer recovery action
-        </div>
-      </div>
-    </div>
-
-    <p class="footer-note">
-      This dashboard is a prototype UI for monitoring pipeline execution, AI-based failure classification, and recovery handling.
-    </p>
+  <div class="card">
+    <h2>Pipeline Controls</h2>
+    <button onclick="createPipeline()">Create Pipeline</button>
+    <button onclick="runPipeline()">Run Pipeline</button>
   </div>
 
-  <script src="bll.js"></script>
+  <div class="card">
+    <h2>Status</h2>
+    <p>Build: <span id="buildStatus" class="status pending">Pending</span></p>
+    <p>Test: <span id="testStatus" class="status pending">Pending</span></p>
+    <p>Deploy: <span id="deployStatus" class="status pending">Pending</span></p>
+  </div>
 
-  <script>
-    function addNotification(message) {
-      const notifications = document.getElementById("notifications");
-      const item = document.createElement("li");
-      item.textContent = message;
-      notifications.appendChild(item);
-    }
+  <div class="card">
+    <h2>Logs</h2>
+    <div id="logBox" class="log-box"></div>
+  </div>
 
-    function appendLog(message) {
-      const logBox = document.getElementById("logBox");
-      logBox.textContent += "\n" + message;
-    }
+  <div class="card">
+    <h2>Notifications</h2>
+    <ul id="notifications"></ul>
+  </div>
 
-    function setStatus(id, text, cls) {
-      const el = document.getElementById(id);
-      el.textContent = text;
-      el.className = "status " + cls;
-    }
+</div>
 
-    function retryBuild() {
+<script>
+let currentPipelineId = null;
 
-      let decision = processPipeline("Success", "Success");
+// Utility functions
+function log(msg) {
+  document.getElementById("logBox").textContent += msg + "\n";
+}
 
-      let failureType = classifyFailure("test failed");
+function notify(msg) {
+  const li = document.createElement("li");
+  li.textContent = msg;
+  document.getElementById("notifications").appendChild(li);
+}
 
-      let action = getRecoveryAction(failureType);
+function setStatus(id, text, cls) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = "status " + cls;
+}
 
-      let notification = generateNotification("Developer selected Retry Build");
+// Create Pipeline
+async function createPipeline() {
+  const res = await fetch("http://localhost:3000/pipeline", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ name: "UI Pipeline" })
+  });
 
-      
-      setStatus("buildStatus", "Running", "running");
-      setStatus("testStatus", "Pending", "pending");
-      setStatus("deployStatus", "Pending", "pending");
+  const data = await res.json();
+  currentPipelineId = data.id;
 
-      appendLog("[ACTION] Retry Build clicked");
-      appendLog("[BLL] " + action + " initiated");
+  notify("Pipeline created with ID: " + currentPipelineId);
+  log("[INFO] Pipeline created");
+}
 
-      addNotification(notification);
+// Run Pipeline
+async function runPipeline() {
 
-      setTimeout(() => {
-
-        if (decision === "Deploy") {
-
-          setStatus("buildStatus", "Success", "success");
-          setStatus("testStatus", "Success", "success");
-          setStatus("deployStatus", "Success", "success");
-
-          document.getElementById("errorText").textContent = "No active error.";
-          document.getElementById("aiClass").textContent = "Resolved";
-
-          appendLog("[INFO] Build successful");
-          appendLog("[INFO] Tests passed");
-          appendLog("[INFO] Deployment completed successfully");
-
-          addNotification(generateNotification("Pipeline recovered successfully"));
-        }
-
-      }, 2000);
+  if (!currentPipelineId) {
+    alert("Create pipeline first!");
+    return;
   }
 
-    function rollbackDeploy() {
+  setStatus("buildStatus", "Running", "running");
+  setStatus("testStatus", "Pending", "pending");
+  setStatus("deployStatus", "Pending", "pending");
 
-      let failureType = classifyFailure("deployment failed");
+  log("[INFO] Pipeline started");
 
-      let action = getRecoveryAction(failureType);
+  const res = await fetch(`http://localhost:3000/run/${currentPipelineId}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      buildStatus: "Success",
+      testStatus: Math.random() > 0.5 ? "Success" : "Fail"
+    })
+  });
 
-      let notification = generateNotification("Rollback initiated by developer");
+  const data = await res.json();
 
-      setStatus("deployStatus", "Running", "running");
+  if (data.result === "Deploy") {
+    setStatus("buildStatus", "Success", "success");
+    setStatus("testStatus", "Success", "success");
+    setStatus("deployStatus", "Success", "success");
 
-      appendLog("[ACTION] Rollback Deployment clicked");
-      appendLog("[BLL] " + action + " started");
+    log("[SUCCESS] Pipeline completed successfully");
+    notify("Pipeline SUCCESS");
+  } else {
+    setStatus("buildStatus", "Success", "success");
+    setStatus("testStatus", "Failed", "failed");
 
-      addNotification(notification);
-
-      setTimeout(() => {
-
-        if (action === "Rollback Deployment") {
-
-          setStatus("deployStatus", "Success", "success");
-
-          document.getElementById("errorText").textContent =
-            "Deployment restored to stable version.";
-
-          document.getElementById("aiClass").textContent =
-            "Deployment Failure Resolved";
-
-          appendLog("[INFO] Rollback completed successfully");
-
-          addNotification(generateNotification("Rollback completed successfully"));
-        }
-
-      }, 2000);
+    log("[ERROR] Test failed → Pipeline stopped");
+    notify("Pipeline FAILED");
   }
+}
+</script>
 
-    function restartService() {
-
-      let failureType = classifyFailure("runtime error");
-
-      let action = getRecoveryAction(failureType);
-
-      let notification = generateNotification("Service restart initiated");
-
-      appendLog("[ACTION] Restart Service clicked");
-      appendLog("[BLL] " + action + " executed");
-
-      addNotification(notification);
-
-      setTimeout(() => {
-
-        if (action === "Restart Service") {
-
-          document.getElementById("errorText").textContent =
-            "Service restarted successfully.";
-
-          document.getElementById("aiClass").textContent =
-            "Runtime Failure Resolved";
-
-          appendLog("[INFO] Service restarted successfully");
-
-          addNotification(generateNotification("Service restarted successfully"));
-        }
-
-      }, 1500);
-  }
-  </script>
 </body>
 </html>
