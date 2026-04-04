@@ -35,3 +35,8 @@ Ensure backend correctly interacts with MySQL database.
 1.``` Database Connection ```\
 Input: Start server\
 Expected Output: Successful connection (no "Access denied" error)
+
+2.``` Table Existence ```\
+Input: Run:
+SHOW TABLES;\
+Expected Output: Required tables (e.g., pipelines) exist.
