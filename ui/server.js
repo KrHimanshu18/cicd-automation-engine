@@ -1,16 +1,19 @@
 const express = require("express");
-const bll = require("./bll/bll");
+const path = require("path");
+const bll = require("./bll"); // or correct path
 
 const app = express();
 app.use(express.json());
 
-// Create pipeline
+// Serve UI
+app.use(express.static(path.join(__dirname)));
+
+// API routes
 app.post("/pipeline", async (req, res) => {
     const id = await bll.createPipeline(req.body.name);
     res.json({ id });
 });
 
-// Run pipeline
 app.post("/run/:id", async (req, res) => {
     const result = await bll.processPipeline(
         req.params.id,
@@ -18,12 +21,6 @@ app.post("/run/:id", async (req, res) => {
         req.body.testStatus
     );
     res.json({ result });
-});
-
-// Get pipelines
-app.get("/pipelines", async (req, res) => {
-    const data = await bll.getAllPipelines();
-    res.json(data);
 });
 
 app.listen(3000, () => {
