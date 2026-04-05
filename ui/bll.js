@@ -15,20 +15,52 @@ async function getAllPipelines() {
 
 // PIPELINE EXECUTION LOGIC
 async function processPipeline(pipelineId, buildStatus, testStatus) {
-    let result;
 
-    // Update status to RUNNING
+    // Set pipeline to RUNNING
     await dal.updatePipelineStatus(pipelineId, "RUNNING");
 
-    if (buildStatus === "Success" && testStatus === "Success") {
-        result = "Deploy";
-        await dal.updatePipelineStatus(pipelineId, "SUCCESS");
-    } else {
-        result = "Stop";
+    // BUILD STEP
+    let buildResult = buildStatus === "Success" ? "SUCCESS" : "FAILED";
+
+    await dal.insertJob(
+        pipelineId,
+        "Build",
+        buildResult,
+        "Build step executed"
+    );
+
+    if (buildResult === "FAILED") {
         await dal.updatePipelineStatus(pipelineId, "FAILED");
+        return "Stop";
     }
 
-    return result;
+    // TEST STEP
+    let testResult = testStatus === "Success" ? "SUCCESS" : "FAILED";
+
+    await dal.insertJob(
+        pipelineId,
+        "Test",
+        testResult,
+        "Test step executed"
+    );
+
+    if (testResult === "FAILED") {
+        await dal.updatePipelineStatus(pipelineId, "FAILED");
+        return "Stop";
+    }
+
+    // DEPLOY STEP
+    await dal.insertJob(
+        pipelineId,
+        "Deploy",
+        "SUCCESS",
+        "Deployment completed"
+    );
+
+    // Final pipeline status
+    await dal.updatePipelineStatus(pipelineId, "SUCCESS");
+
+    return "Deploy";
 }
 
 // FAILURE CLASSIFICATION
