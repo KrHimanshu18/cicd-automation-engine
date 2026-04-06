@@ -108,6 +108,8 @@ describe('Pipeline API Tests', () => {
 });
 
 // FIX OPEN HANDLE ISSUE
-afterAll(() => {
-  process.exit(0);
+afterAll(async () => {
+  const { getPool } = require('../dal/db_config');
+  const pool = getPool();
+  await pool.end();
 });
