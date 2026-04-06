@@ -96,9 +96,9 @@ Detected Failure Type: Build Failure
 
 ### **8. Coverage Achieved**
 
-- ✔ Statement Coverage
-- ✔ Branch Coverage
-- ✔ Condition Coverage
+- Statement Coverage
+- Branch Coverage
+- Condition Coverage
 
 All possible paths in the program were executed.
 
