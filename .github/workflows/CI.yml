@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Tests
         env:
-          DB_HOST: mysql
+          DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASSWORD: root
           DB_NAME: testdb
