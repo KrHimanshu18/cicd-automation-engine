@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CI/CD Automation Dashboard</title>
+  <title>CI/CD Dashboard</title>
 
   <style>
-    body { font-family: Arial; margin: 0; background: #f4f6f9; }
-    header { background: #1f3c88; color: white; padding: 20px; text-align: center; }
+    body { font-family: Arial; background: #f4f6f9; margin: 0; }
+    header { background: #1f3c88; color: white; padding: 15px; text-align: center; }
 
     .container { width: 90%; margin: 20px auto; }
     .card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+
+    input { padding: 8px; margin: 5px; width: 250px; }
+
+    button { padding: 10px; margin: 5px; cursor: pointer; }
 
     .status { padding: 5px 10px; border-radius: 5px; }
     .success { background: #d4edda; }
@@ -18,14 +21,13 @@
     .running { background: #d1ecf1; }
     .pending { background: #fff3cd; }
 
-    button { padding: 10px; margin: 5px; cursor: pointer; }
-
     .log-box {
       background: black;
       color: #00ff99;
       padding: 10px;
-      min-height: 120px;
+      min-height: 150px;
       font-family: monospace;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -38,12 +40,20 @@
 
 <div class="container">
 
+  <!-- CREATE PIPELINE -->
   <div class="card">
-    <h2>Pipeline Controls</h2>
+    <h2>Create Pipeline</h2>
+
+    <input id="name" placeholder="Pipeline Name"><br>
+    <input id="repo" placeholder="Repo URL"><br>
+    <input id="build" placeholder="Build Command"><br>
+    <input id="test" placeholder="Test Command"><br>
+
     <button onclick="createPipeline()">Create Pipeline</button>
     <button onclick="runPipeline()">Run Pipeline</button>
   </div>
 
+  <!-- STATUS -->
   <div class="card">
     <h2>Status</h2>
     <p>Build: <span id="buildStatus" class="status pending">Pending</span></p>
@@ -51,11 +61,13 @@
     <p>Deploy: <span id="deployStatus" class="status pending">Pending</span></p>
   </div>
 
+  <!-- LOGS -->
   <div class="card">
     <h2>Logs</h2>
     <div id="logBox" class="log-box"></div>
   </div>
 
+  <!-- NOTIFICATIONS -->
   <div class="card">
     <h2>Notifications</h2>
     <ul id="notifications"></ul>
@@ -66,7 +78,8 @@
 <script>
 let currentPipelineId = null;
 
-// Utility functions
+// -------- UTIL -------- //
+
 function log(msg) {
   document.getElementById("logBox").textContent += msg + "\n";
 }
@@ -83,22 +96,38 @@ function setStatus(id, text, cls) {
   el.className = "status " + cls;
 }
 
-// Create Pipeline
+// -------- CREATE PIPELINE -------- //
+
 async function createPipeline() {
-  const res = await fetch("http://localhost:3000/pipeline", {
+
+  const data = {
+    name: document.getElementById("name").value,
+    repoUrl: document.getElementById("repo").value,
+    buildCommand: document.getElementById("build").value,
+    testCommand: document.getElementById("test").value
+  };
+
+  if (!data.name || !data.repoUrl) {
+    alert("Name and Repo URL required");
+    return;
+  }
+
+  const res = await fetch("/pipeline", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ name: "UI Pipeline" })
+    body: JSON.stringify(data)
   });
 
-  const data = await res.json();
-  currentPipelineId = data.id;
+  const result = await res.json();
 
-  notify("Pipeline created with ID: " + currentPipelineId);
+  currentPipelineId = result.id;
+
+  notify("Pipeline created: " + currentPipelineId);
   log("[INFO] Pipeline created");
 }
 
-// Run Pipeline
+// -------- RUN PIPELINE -------- //
+
 async function runPipeline() {
 
   if (!currentPipelineId) {
@@ -106,35 +135,46 @@ async function runPipeline() {
     return;
   }
 
+  // Reset UI
   setStatus("buildStatus", "Running", "running");
   setStatus("testStatus", "Pending", "pending");
   setStatus("deployStatus", "Pending", "pending");
 
-  log("[INFO] Pipeline started");
+  log("[INFO] Pipeline execution started...");
 
-  const res = await fetch(`http://localhost:3000/run/${currentPipelineId}`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      buildStatus: "Success",
-      testStatus: Math.random() > 0.5 ? "Success" : "Fail"
-    })
+  const res = await fetch(`/run/${currentPipelineId}`, {
+    method: "POST"
   });
 
   const data = await res.json();
 
-  if (data.result === "Deploy") {
+  // -------- HANDLE RESPONSE -------- //
+
+  if (data.status === "SUCCESS") {
+
     setStatus("buildStatus", "Success", "success");
     setStatus("testStatus", "Success", "success");
     setStatus("deployStatus", "Success", "success");
 
-    log("[SUCCESS] Pipeline completed successfully");
+    log("[SUCCESS] Pipeline completed");
     notify("Pipeline SUCCESS");
-  } else {
-    setStatus("buildStatus", "Success", "success");
-    setStatus("testStatus", "Failed", "failed");
 
-    log("[ERROR] Test failed → Pipeline stopped");
+  } else {
+
+    if (data.stage === "CLONE") {
+      setStatus("buildStatus", "Failed", "failed");
+    }
+
+    if (data.stage === "BUILD") {
+      setStatus("buildStatus", "Failed", "failed");
+    }
+
+    if (data.stage === "TEST") {
+      setStatus("buildStatus", "Success", "success");
+      setStatus("testStatus", "Failed", "failed");
+    }
+
+    log(`[ERROR] ${data.stage} failed`);
     notify("Pipeline FAILED");
   }
 }

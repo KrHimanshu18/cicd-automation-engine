@@ -1,34 +1,26 @@
 {
-  "name": "cicd-node-demo",
+  "name": "recoverflow",
   "version": "1.0.0",
-  "private": true,
-  "type": "commonjs",
+  "description": "CI/CD automation engine with AI failure handling",
+  "main": "start.js",
   "scripts": {
+    "start": "node start.js",
+    "dev": "node start.js",
     "test": "jest",
-    "build": "node -c src/app.js"
+    "lint": "echo \"Add ESLint later\""
   },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  },
+  "keywords": ["ci-cd", "automation", "ai", "devops"],
+  "author": "Hrishi",
+  "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "mysql2": "^3.20.0"
+    "mysql2": "^3.11.0",
+    "dotenv": "^16.4.5"
   },
-  "description": "- Himanshu Kumar\r - Hrishi Shekhar\r - Ishwari Rajendra Umak",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KrHimanshu18/cicd-automation-engine.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/KrHimanshu18/cicd-automation-engine/issues"
-  },
-  "homepage": "https://github.com/KrHimanshu18/cicd-automation-engine#readme"
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
 }

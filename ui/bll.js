@@ -1,93 +1,157 @@
 const DAL = require("../dal/database");
+const { runCommand } = require("../utils/executor");
+const fs = require("fs");
 
 const dal = new DAL();
 
-// CREATE PIPELINE
-async function createPipeline(name) {
-    const pipelineId = await dal.insertPipeline(name, "CREATED");
-    return pipelineId;
+// ---------------- CREATE PIPELINE ----------------
+async function createPipeline(data) {
+    try {
+        const { name, repoUrl, buildCommand, testCommand } = data;
+
+        if (!name || !repoUrl) {
+            throw new Error("name and repoUrl are required");
+        }
+
+        const pipelineId = await dal.insertPipelineWithConfig(
+            name,
+            repoUrl,
+            buildCommand,
+            testCommand,
+            "CREATED"
+        );
+
+        return pipelineId;
+
+    } catch (err) {
+        console.error("BLL createPipeline error:", err.message);
+        throw err;
+    }
 }
 
-// GET ALL PIPELINES
+// ---------------- GET ALL PIPELINES ----------------
 async function getAllPipelines() {
-    return await dal.getPipelines();
+    try {
+        return await dal.getPipelines();
+    } catch (err) {
+        console.error("BLL getAllPipelines error:", err.message);
+        throw err;
+    }
 }
 
-// PIPELINE EXECUTION LOGIC
-async function processPipeline(pipelineId, buildStatus, testStatus) {
+// ---------------- PROCESS PIPELINE (REAL EXECUTION) ----------------
+async function processPipeline(pipelineId) {
 
-    // Set pipeline to RUNNING
-    await dal.updatePipelineStatus(pipelineId, "RUNNING");
+    try {
+        const pipeline = await dal.getPipelineById(pipelineId);
 
-    // BUILD STEP
-    let buildResult = buildStatus === "Success" ? "SUCCESS" : "FAILED";
+        if (!pipeline) throw new Error("Pipeline not found");
 
-    await dal.insertJob(
-        pipelineId,
-        "Build",
-        buildResult,
-        "Build step executed"
-    );
+        // Safe extraction
+        const repo_url = pipeline.repo_url;
+        const build_command = pipeline.build_command || "npm install";
+        const test_command = pipeline.test_command || "npm test";
 
-    if (buildResult === "FAILED") {
-        await dal.updatePipelineStatus(pipelineId, "FAILED");
-        return "Stop";
+        await dal.updatePipelineStatus(pipelineId, "RUNNING");
+
+        const folder = `repos/pipeline_${pipelineId}`;
+
+        // ---------------- CLONE ----------------
+        try {
+            // Clean old folder if exists
+            if (fs.existsSync(folder)) {
+                fs.rmSync(folder, { recursive: true, force: true });
+            }
+
+            const cloneLog = await runCommand(`git clone ${repo_url} ${folder}`);
+            await dal.insertJob(pipelineId, "Clone", "SUCCESS", cloneLog);
+
+        } catch (err) {
+            await dal.insertJob(pipelineId, "Clone", "FAILED", err.toString());
+            await dal.updatePipelineStatus(pipelineId, "FAILED");
+
+            return { status: "FAILED", stage: "CLONE", error: err.toString() };
+        }
+
+        // ---------------- BUILD ----------------
+        try {
+            const buildLog = await runCommand(build_command, folder);
+            await dal.insertJob(pipelineId, "Build", "SUCCESS", buildLog);
+
+        } catch (err) {
+            await dal.insertJob(pipelineId, "Build", "FAILED", err.toString());
+            await dal.updatePipelineStatus(pipelineId, "FAILED");
+
+            return { status: "FAILED", stage: "BUILD", error: err.toString() };
+        }
+
+        // ---------------- TEST ----------------
+        try {
+            const testLog = await runCommand(test_command, folder);
+            await dal.insertJob(pipelineId, "Test", "SUCCESS", testLog);
+
+        } catch (err) {
+            await dal.insertJob(pipelineId, "Test", "FAILED", err.toString());
+            await dal.updatePipelineStatus(pipelineId, "FAILED");
+
+            return { status: "FAILED", stage: "TEST", error: err.toString() };
+        }
+
+        // ---------------- DEPLOY ----------------
+        await dal.insertJob(
+            pipelineId,
+            "Deploy",
+            "SUCCESS",
+            "Deployment completed"
+        );
+
+        await dal.updatePipelineStatus(pipelineId, "SUCCESS");
+
+        return { status: "SUCCESS", stage: "DEPLOY" };
+
+    } catch (err) {
+        console.error("Pipeline execution error:", err.message);
+        throw err;
     }
-
-    // TEST STEP
-    let testResult = testStatus === "Success" ? "SUCCESS" : "FAILED";
-
-    await dal.insertJob(
-        pipelineId,
-        "Test",
-        testResult,
-        "Test step executed"
-    );
-
-    if (testResult === "FAILED") {
-        await dal.updatePipelineStatus(pipelineId, "FAILED");
-        return "Stop";
-    }
-
-    // DEPLOY STEP
-    await dal.insertJob(
-        pipelineId,
-        "Deploy",
-        "SUCCESS",
-        "Deployment completed"
-    );
-
-    // Final pipeline status
-    await dal.updatePipelineStatus(pipelineId, "SUCCESS");
-
-    return "Deploy";
 }
 
-// FAILURE CLASSIFICATION
+// ---------------- AI FAILURE CLASSIFICATION ----------------
 function classifyFailure(logMessage) {
-    if (logMessage.includes("test")) return "Test Failure";
-    if (logMessage.includes("deploy")) return "Deployment Failure";
-    if (logMessage.includes("runtime")) return "Runtime Failure";
+    if (!logMessage) return "Unknown Failure";
+
+    const msg = logMessage.toLowerCase();
+
+    if (msg.includes("test")) return "Test Failure";
+    if (msg.includes("deploy")) return "Deployment Failure";
+    if (msg.includes("runtime")) return "Runtime Failure";
+    if (msg.includes("module")) return "Dependency Error";
+
     return "Unknown Failure";
 }
 
-// RECOVERY LOGIC (WITH DB UPDATE)
+// ---------------- RECOVERY LOGIC ----------------
 async function getRecoveryAction(pipelineId, failureType) {
-    let action;
+    try {
+        let action;
 
-    if (failureType === "Test Failure") action = "Retry Build";
-    else if (failureType === "Deployment Failure") action = "Rollback Deployment";
-    else action = "Restart Service";
+        if (failureType === "Test Failure") action = "Retry Build";
+        else if (failureType === "Deployment Failure") action = "Rollback Deployment";
+        else if (failureType === "Dependency Error") action = "Run npm install";
+        else action = "Restart Service";
 
-    // Mark recovery triggered
-    await dal.updatePipelineStatus(pipelineId, "RECOVERY_TRIGGERED");
+        await dal.updatePipelineStatus(pipelineId, "RECOVERY_TRIGGERED");
 
-    return action;
+        return { action };
+
+    } catch (err) {
+        console.error("BLL getRecoveryAction error:", err.message);
+        throw err;
+    }
 }
 
-// NOTIFICATION
+// ---------------- NOTIFICATION ----------------
 function generateNotification(message) {
-    return "NOTIFICATION: " + message;
+    return `NOTIFICATION: ${message}`;
 }
 
 module.exports = {

@@ -1,58 +1,85 @@
-const pool = require("./db_config");
+const { getPool } = require("./db_config");
 
 class DAL {
 
-    // CREATE PIPELINE
-    async insertPipeline(name, status) {
-        const query = "INSERT INTO pipelines (name, status) VALUES (?, ?)";
-        const [result] = await pool.execute(query, [name, status]);
-        return result.insertId;
+    // CREATE PIPELINE WITH CONFIG
+    async insertPipelineWithConfig(name, repoUrl, buildCommand, testCommand, status = "CREATED") {
+        try {
+            const pool = getPool();
+            const query = `
+                INSERT INTO pipelines (name, repo_url, build_command, test_command, status)
+                VALUES (?, ?, ?, ?, ?)
+            `;
+            const [result] = await pool.execute(query, [
+                name,
+                repoUrl,
+                buildCommand,
+                testCommand,
+                status
+            ]);
+            return result.insertId;
+        } catch (err) {
+            console.error("DAL insertPipelineWithConfig error:", err.message);
+            throw err;
+        }
     }
 
     // GET ALL PIPELINES
     async getPipelines() {
-        const query = "SELECT * FROM pipelines";
-        const [rows] = await pool.execute(query);
-        return rows;
-    }
-
-    // GET SINGLE PIPELINE
-    async getPipelineById(id) {
-        const query = "SELECT * FROM pipelines WHERE id=?";
-        const [rows] = await pool.execute(query, [id]);
-        return rows[0];
+        try {
+            const pool = getPool();
+            const [rows] = await pool.execute("SELECT * FROM pipelines");
+            return rows;
+        } catch (err) {
+            console.error("DAL getPipelines error:", err.message);
+            throw err;
+        }
     }
 
     // UPDATE PIPELINE STATUS
     async updatePipelineStatus(id, status) {
-        const query = "UPDATE pipelines SET status=? WHERE id=?";
-        await pool.execute(query, [status, id]);
+        try {
+            const pool = getPool();
+            await pool.execute(
+                "UPDATE pipelines SET status=? WHERE id=?",
+                [status, id]
+            );
+        } catch (err) {
+            console.error("DAL updatePipelineStatus error:", err.message);
+            throw err;
+        }
     }
 
     // CREATE JOB
-    async insertJob(pipeline_id, job_name, status, logs) {
-        const query = `
-            INSERT INTO jobs (pipeline_id, job_name, status, logs)
-            VALUES (?, ?, ?, ?)
-        `;
-        const [result] = await pool.execute(query, [pipeline_id, job_name, status, logs]);
-        return result.insertId;
+    async insertJob(pipeline_id, job_name, status, logs = "") {
+        try {
+            const pool = getPool();
+            const query = `
+                INSERT INTO jobs (pipeline_id, job_name, status, logs)
+                VALUES (?, ?, ?, ?)
+            `;
+            const [result] = await pool.execute(query, [
+                pipeline_id,
+                job_name,
+                status,
+                logs
+            ]);
+            return result.insertId;
+        } catch (err) {
+            console.error("DAL insertJob error:", err.message);
+            throw err;
+        }
     }
 
-    // GET JOBS FOR A PIPELINE
-    async getJobs(pipeline_id) {
-        const query = "SELECT * FROM jobs WHERE pipeline_id=?";
-        const [rows] = await pool.execute(query, [pipeline_id]);
-        return rows;
+    async getPipelineById(id) {
+        const pool = getPool();
+        const [rows] = await pool.execute(
+            "SELECT * FROM pipelines WHERE id=?",
+            [id]
+        );
+        return rows[0];
     }
 
-    // UPDATE JOB STATUS
-    async updateJobStatus(job_id, status, logs) {
-        const query = `
-            UPDATE jobs SET status=?, logs=? WHERE id=?
-        `;
-        await pool.execute(query, [status, logs, job_id]);
-    }
 }
 
 module.exports = DAL;
