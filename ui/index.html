@@ -51,6 +51,7 @@
 
     <button onclick="createPipeline()">Create Pipeline</button>
     <button onclick="runPipeline()">Run Pipeline</button>
+    <button onclick="retryPipeline()">Retry Pipeline</button>
   </div>
 
   <!-- STATUS -->
@@ -120,7 +121,7 @@ async function createPipeline() {
 
   const result = await res.json();
 
-  currentPipelineId = result.id;
+  currentPipelineId = result.pipelineId;
 
   notify("Pipeline created: " + currentPipelineId);
   log("[INFO] Pipeline created");
@@ -150,14 +151,22 @@ async function runPipeline() {
 
   // -------- HANDLE RESPONSE -------- //
 
-  if (data.status === "SUCCESS") {
+  if (data.status === "SUCCESS" || data.status === "RECOVERED") {
 
     setStatus("buildStatus", "Success", "success");
     setStatus("testStatus", "Success", "success");
     setStatus("deployStatus", "Success", "success");
 
     log("[SUCCESS] Pipeline completed");
-    notify("Pipeline SUCCESS");
+    if (data.logs) {
+      data.logs.forEach(l => log(l));
+    }
+
+    if (data.status === "RECOVERED") {
+      notify("Pipeline RECOVERED by AI");
+    } else {
+      notify("Pipeline SUCCESS");
+    }
 
   } else {
 
@@ -176,6 +185,63 @@ async function runPipeline() {
 
     log(`[ERROR] ${data.stage} failed`);
     notify("Pipeline FAILED");
+    if (data.logs) {
+      data.logs.forEach(l => log(l));
+    }
+
+    if (data.suggestion) {
+      notify("AI Suggestion: " + data.suggestion);
+      log("[AI] " + data.suggestion);
+    }
+  }
+}
+
+async function retryPipeline() {
+
+  if (!currentPipelineId) {
+    alert("Create or run a pipeline first!");
+    return;
+  }
+
+  log("[INFO] Retrying pipeline...");
+
+  notify("Retry triggered for pipeline " + currentPipelineId);
+
+  const res = await fetch(`/retry/${currentPipelineId}`, {
+    method: "POST"
+  });
+
+  const data = await res.json();
+
+  // Reset UI first
+  setStatus("buildStatus", "Running", "running");
+  setStatus("testStatus", "Pending", "pending");
+  setStatus("deployStatus", "Pending", "pending");
+
+  if (data.status === "SUCCESS" || data.status === "RECOVERED") {
+
+    setStatus("buildStatus", "Success", "success");
+    setStatus("testStatus", "Success", "success");
+    setStatus("deployStatus", "Success", "success");
+
+    log("[SUCCESS] Retry successful");
+    if (data.logs) {
+      data.logs.forEach(l => log(l));
+    }
+    notify("Pipeline RECOVERED");
+
+  } else {
+
+    log(`[ERROR] Retry failed at ${data.stage}`);
+    if (data.logs) {
+      data.logs.forEach(l => log(l));
+    }
+    notify("Retry FAILED");
+
+    if (data.suggestion) {
+      notify("AI Suggestion: " + data.suggestion);
+      log("[AI] " + data.suggestion);
+    }
   }
 }
 </script>

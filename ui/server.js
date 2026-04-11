@@ -1,66 +1,80 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
+
 const bll = require("./bll");
 
 const app = express();
 
-// ---------------- MIDDLEWARE ---------------- //
+// ---------------- MIDDLEWARE ----------------
+app.use(cors());
 app.use(express.json());
 
-// Avoid favicon error
-app.get('/favicon.ico', (req, res) => res.sendStatus(204));
+// Serve UI (since server.js is inside ui folder)
+app.use(express.static(__dirname));
 
-// Serve static UI
-app.use(express.static(path.join(__dirname)));
+// ---------------- ROUTES ----------------
 
-// ---------------- API ROUTES ---------------- //
-
-// CREATE PIPELINE
+// Create pipeline
 app.post("/pipeline", async (req, res) => {
     try {
-        const { name, repoUrl, buildCommand, testCommand } = req.body;
+        const pipelineId = await bll.createPipeline(req.body);
 
-        if (!name || !repoUrl) {
-            return res.status(400).json({
-                error: "name and repoUrl are required"
-            });
-        }
+        console.log("Pipeline created with ID:", pipelineId); // debug
 
-        const id = await bll.createPipeline({
-            name,
-            repoUrl,
-            buildCommand,
-            testCommand
+        res.json({
+            message: "Pipeline created",
+            pipelineId
         });
 
-        res.status(200).json({ id });
-
     } catch (err) {
-        console.error("Error in /pipeline:", err.message);
+        console.error("Error creating pipeline:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
 
-// RUN PIPELINE (REAL EXECUTION)
+// Run pipeline
 app.post("/run/:id", async (req, res) => {
     try {
-        const result = await bll.processPipeline(req.params.id);
-        res.status(200).json(result);
+        const pipelineId = req.params.id;
+
+        const result = await bll.processPipeline(pipelineId);
+
+        res.json(result);
+
     } catch (err) {
-        console.error("Error in /run:", err.message);
+        console.error("Error running pipeline:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
 
-// GET PIPELINES
+// Get all pipelines
 app.get("/pipelines", async (req, res) => {
     try {
-        const data = await bll.getAllPipelines();
-        res.status(200).json(data);
+        const pipelines = await bll.getAllPipelines();
+        res.json(pipelines);
     } catch (err) {
-        console.error("Error in /pipelines:", err.message);
+        console.error("Error fetching pipelines:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
 
+// Retry pipeline
+app.post("/retry/:id", async (req, res) => {
+    try {
+        const pipelineId = req.params.id;
+
+        console.log("Retrying pipeline:", pipelineId);
+
+        const result = await bll.processPipeline(pipelineId);
+
+        res.json(result);
+
+    } catch (err) {
+        console.error("Retry error:", err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ---------------- EXPORT APP ----------------
 module.exports = app;

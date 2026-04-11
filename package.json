@@ -9,15 +9,21 @@
     "test": "jest",
     "lint": "echo \"Add ESLint later\""
   },
-  "keywords": ["ci-cd", "automation", "ai", "devops"],
+  "keywords": [
+    "ci-cd",
+    "automation",
+    "ai",
+    "devops"
+  ],
   "author": "Hrishi",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "mysql2": "^3.11.0",
-    "dotenv": "^16.4.5"
+    "openai": "^6.34.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

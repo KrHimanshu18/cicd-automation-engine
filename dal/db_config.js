@@ -6,9 +6,10 @@ let pool;
 const DB_HOST = process.env.DB_HOST || 'localhost';
 const DB_USER = process.env.DB_USER || 'root';
 const DB_PASSWORD = process.env.DB_PASSWORD || '';
-const DB_NAME = process.env.DB_NAME || 'testdb';
+const DB_NAME = process.env.DB_NAME || 'cicd_engine'; 
 const DB_PORT = process.env.DB_PORT || 3306;
 
+// ---------------- INIT DB ----------------
 async function initDB() {
     try {
         // Create DB if not exists
@@ -29,7 +30,10 @@ async function initDB() {
             user: DB_USER,
             password: DB_PASSWORD,
             database: DB_NAME,
-            port: DB_PORT
+            port: DB_PORT,
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
         });
 
         // Create tables
@@ -64,8 +68,11 @@ async function initDB() {
     }
 }
 
-// REQUIRED FOR TEST CLEANUP
+// ---------------- GET POOL ----------------
 function getPool() {
+    if (!pool) {
+        throw new Error("Database not initialized. Call initDB() first.");
+    }
     return pool;
 }
 
