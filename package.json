@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node start.js",
     "dev": "node start.js",
-    "test": "jest",
+    "test": "set NODE_ENV=test && jest",
     "lint": "echo \"Add ESLint later\""
   },
   "keywords": [

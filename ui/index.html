@@ -121,7 +121,7 @@ async function createPipeline() {
 
   const result = await res.json();
 
-  currentPipelineId = result.pipelineId;
+  currentPipelineId = result.id;
 
   notify("Pipeline created: " + currentPipelineId);
   log("[INFO] Pipeline created");

@@ -1,39 +1,34 @@
 const { exec } = require("child_process");
 
 function runCommand(command, cwd = null) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
 
         exec(command, {
             cwd,
             timeout: 60000
         }, (error, stdout, stderr) => {
 
-            const output = stdout + "\n" + stderr;
+            const output = (stdout || "") + "\n" + (stderr || "");
 
-            // 🔥 FIX: treat warnings as success
+            // 🔥 If error occurs
             if (error) {
 
-                // If output contains only warnings → treat as success
+                const msg = output.toLowerCase();
+
+                // Treat warnings as success
                 if (
-                    output.toLowerCase().includes("warn") &&
-                    !output.toLowerCase().includes("err!")
+                    msg.includes("warn") &&
+                    !msg.includes("err!")
                 ) {
-                    return resolve({
-                        status: "SUCCESS",
-                        log: output
-                    });
+                    return resolve(output);
                 }
 
-                return resolve({
-                    status: "FAILED",
-                    log: output
-                });
+                // ❗ IMPORTANT: reject on failure
+                return reject(output);
             }
 
-            resolve({
-                status: "SUCCESS",
-                log: output
-            });
+            // Success
+            resolve(output);
         });
     });
 }
