@@ -35,7 +35,14 @@ async function getAllPipelines() {
 async function processPipeline(pipelineId) {
     try {
         const pipeline = await dal.getPipelineById(pipelineId);
-        if (!pipeline) throw new Error("Pipeline not found");
+        if (!pipeline) {
+            return {
+                status: "FAILED",
+                stage: "CLONE",
+                suggestion: "Pipeline not found"
+            };
+        }
+        
 
         const repo_url = pipeline.repo_url;
         const build_command = pipeline.build_command || "npm install";

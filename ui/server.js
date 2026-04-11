@@ -24,7 +24,7 @@ app.post("/pipeline", async (req, res) => {
 
         res.json({
             message: "Pipeline created",
-            pipelineId
+            id: pipelineId
         });
 
     } catch (err) {
@@ -44,7 +44,11 @@ app.post("/run/:id", async (req, res) => {
 
     } catch (err) {
         console.error("Error running pipeline:", err.message);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({
+            status: "FAILED",   
+            stage: "UNKNOWN",
+            error: err.message
+        });
     }
 });
 
