@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const DAL = require("../dal/database");
 const { analyzeFailure } = require("../ai/failure_Analyzer");
-const { runCommand } = require("../utils/executor"); // ✅ IMPORTANT
+const executor = require("../utils/executor"); 
 
 const dal = new DAL();
 
@@ -51,14 +51,14 @@ async function processPipeline(pipelineId) {
 
         // -------- CLONE --------
         try {
-            await runCommand(`git clone ${repo_url} ${repoDir}`);
+            await executor.runCommand(`git clone ${repo_url} ${repoDir}`);
         } catch (err) {
             return { status: "FAILED", stage: "CLONE" };
         }
 
         // -------- BUILD --------
         try {
-            await runCommand(build_command, repoDir);
+            await executor.runCommand(build_command, repoDir);
         } catch (err) {
             analyzeFailure(err);
             return { status: "FAILED", stage: "BUILD" };
@@ -66,7 +66,7 @@ async function processPipeline(pipelineId) {
 
         // -------- TEST --------
         try {
-            await runCommand(test_command, repoDir);
+            await executor.runCommand(test_command, repoDir);
         } catch (err) {
             analyzeFailure(err);
             return { status: "FAILED", stage: "TEST" };
