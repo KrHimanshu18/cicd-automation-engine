@@ -24,7 +24,7 @@ function runCommand(command, cwd = null) {
                 }
 
                 // ❗ IMPORTANT: reject on failure
-                return reject(output);
+                return reject(new Error(output));
             }
 
             // Success

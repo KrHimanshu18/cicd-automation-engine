@@ -113,3 +113,17 @@ afterAll(async () => {
   const pool = getPool();
   await pool.end();
 });
+
+// ---------------- RETRY BUILD SUCCESS ----------------
+test('Retry BUILD success', async () => {
+
+  runCommand
+    .mockResolvedValueOnce("clone success")
+    .mockRejectedValueOnce("installl failed")
+    .mockResolvedValueOnce("retry success");
+
+  const res = await request(app)
+    .post(`/run/${pipelineId}`);
+
+  expect(res.body.status).toBe("SUCCESS");
+});
