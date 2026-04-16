@@ -1,6 +1,12 @@
 module.exports = {
+    testEnvironment: "node",
+
     testPathIgnorePatterns: [
         "/node_modules/",
-        "/repos/"   
+        "/repos/"
+    ],
+
+    modulePathIgnorePatterns: [
+        "<rootDir>/repos/"
     ]
 };
