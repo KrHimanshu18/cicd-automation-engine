@@ -6,6 +6,10 @@ const executor = require("../utils/executor");
 
 const dal = new DAL();
 
+// store fixes temporarily (in-memory)
+let lastFix = {};
+
+// ---------------- CREATE PIPELINE ----------------
 async function createPipeline(data) {
     const { name, repoUrl, buildCommand, testCommand } = data;
 
@@ -16,14 +20,10 @@ async function createPipeline(data) {
         testCommand
     );
 
-    console.log("Created Pipeline ID:", id);
     return id;
 }
 
-async function getAllPipelines() {
-    return await dal.getPipelines();
-}
-
+// ---------------- PROCESS PIPELINE ----------------
 async function processPipeline(pipelineId) {
     let logs = [];
 
@@ -32,86 +32,124 @@ async function processPipeline(pipelineId) {
         logs.push(msg);
     }
 
+    const pipeline = await dal.getPipelineById(pipelineId);
+
+    if (!pipeline) {
+        return { status: "FAILED", stage: "CLONE", logs };
+    }
+
+    const { repo_url, build_command, test_command } = pipeline;
+
+    const repoDir = path.join(__dirname, "..", "repos", `pipeline_${pipelineId}`);
+
+    if (fs.existsSync(repoDir)) {
+        fs.rmSync(repoDir, { recursive: true, force: true });
+    }
+
+    // -------- CLONE --------
     try {
-        const pipeline = await dal.getPipelineById(pipelineId);
+        log("[CLONE] Running...");
+        await executor.runCommand(`git clone ${repo_url} ${repoDir}`);
+        log("[CLONE] Success");
+    } catch (err) {
+        log("[CLONE] Failed");
+        return { status: "FAILED", stage: "CLONE", logs };
+    }
 
-        if (!pipeline) {
-            return { status: "FAILED", stage: "CLONE", logs };
-        }
+    // -------- BUILD --------
+    try {
+        log("[BUILD] Running: " + build_command);
+        await executor.runCommand(build_command, repoDir);
+        log("[BUILD] Success");
+    } catch (err) {
+        log("[BUILD] Failed");
 
-        const { repo_url, build_command, test_command } = pipeline;
+        const analysis = analyzeFailure(err.toString());
 
-        const baseDir = path.join(__dirname, "..", "repos");
-        if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir);
+        log("[AI] Type: " + analysis.type);
+        log("[AI] Suggestion: " + analysis.suggestion);
+        log("[AI] Fix Command: " + analysis.fixCommand);
 
-        const repoDir = path.join(baseDir, `pipeline_${pipelineId}`);
+        lastFix[pipelineId] = {
+            stage: "BUILD",
+            command: analysis.fixCommand
+        };
 
-        if (fs.existsSync(repoDir)) {
-            fs.rmSync(repoDir, { recursive: true, force: true });
-        }
+        return {
+            status: "FAILED",
+            stage: "BUILD",
+            fixCommand: analysis.fixCommand,
+            logs
+        };
+    }
 
-        // -------- CLONE --------
-        try {
-            log("[CLONE] Running git clone");
-            await executor.runCommand(`git clone ${repo_url} ${repoDir}`);
-            log("[CLONE] Success");
-        } catch (err) {
-            log("[CLONE] Failed");
-            return { status: "FAILED", stage: "CLONE", logs };
-        }
+    // -------- TEST --------
+    try {
+        log("[TEST] Running: " + test_command);
+        await executor.runCommand(test_command, repoDir);
+        log("[TEST] Success");
+    } catch (err) {
+        log("[TEST] Failed");
 
-        // -------- BUILD --------
-        try {
-            log("[BUILD] Running: " + build_command);
-            await executor.runCommand(build_command, repoDir);
-            log("[BUILD] Success");
-        } catch (err) {
-            log("[BUILD] Failed");
+        const analysis = analyzeFailure(err.toString());
 
-            const analysis = analyzeFailure(err.toString());
-            log("[AI] Suggestion: " + analysis.suggestion);
-            log("[AI] Fix: " + analysis.fixCommand);
+        log("[AI] Type: " + analysis.type);
+        log("[AI] Suggestion: " + analysis.suggestion);
+        log("[AI] Fix Command: " + analysis.fixCommand);
 
-            // Retry if fix exists (even if same command)
-            if (analysis.fixCommand) {
-                try {
-                    log("[RETRY] Running: " + analysis.fixCommand);
-                    await executor.runCommand(analysis.fixCommand, repoDir);
-                    log("[BUILD] Retry Success");
-                } catch {
-                    return { status: "FAILED", stage: "BUILD", logs };
-                }
-            } else {
-                return { status: "FAILED", stage: "BUILD", logs };
-            }
-        }
+        lastFix[pipelineId] = {
+            stage: "TEST",
+            command: analysis.fixCommand
+        };
 
-        // -------- TEST --------
-        try {
-            log("[TEST] Running: " + test_command);
-            await executor.runCommand(test_command, repoDir);
+        return {
+            status: "FAILED",
+            stage: "TEST",
+            fixCommand: analysis.fixCommand,
+            logs
+        };
+    }
+
+    return {
+        status: "SUCCESS",
+        stage: "DEPLOY",
+        logs
+    };
+}
+
+// ---------------- RETRY PIPELINE ----------------
+async function retryPipeline(pipelineId) {
+    let logs = [];
+
+    function log(msg) {
+        console.log(msg);
+        logs.push(msg);
+    }
+
+    const fix = lastFix[pipelineId];
+
+    if (!fix || !fix.command) {
+        return {
+            status: "FAILED",
+            message: "No fix available",
+            logs
+        };
+    }
+
+    const pipeline = await dal.getPipelineById(pipelineId);
+    const repoDir = path.join(__dirname, "..", "repos", `pipeline_${pipelineId}`);
+
+    try {
+        log("[RETRY] Applying fix: " + fix.command);
+
+        await executor.runCommand(fix.command, repoDir);
+
+        log("[RETRY] Fix applied successfully");
+
+        if (fix.stage === "BUILD") {
+            await executor.runCommand(pipeline.test_command, repoDir);
             log("[TEST] Success");
-        } catch (err) {
-            log("[TEST] Failed");
-
-            const analysis = analyzeFailure(err.toString());
-            log("[AI] Suggestion: " + analysis.suggestion);
-            log("[AI] Fix: " + analysis.fixCommand);
-
-            if (analysis.fixCommand) {
-                try {
-                    log("[RETRY] Running: " + analysis.fixCommand);
-                    await executor.runCommand(analysis.fixCommand, repoDir);
-                    log("[TEST] Retry Success");
-                } catch {
-                    return { status: "FAILED", stage: "TEST", logs };
-                }
-            } else {
-                return { status: "FAILED", stage: "TEST", logs };
-            }
         }
-
-        log("Pipeline completed");
 
         return {
             status: "SUCCESS",
@@ -120,12 +158,24 @@ async function processPipeline(pipelineId) {
         };
 
     } catch (err) {
-        throw err;
+        log("[RETRY] Failed again");
+
+        return {
+            status: "FAILED",
+            stage: fix.stage,
+            logs
+        };
     }
+}
+
+// ---------------- GET ALL PIPELINES ----------------
+async function getAllPipelines() {
+    return await dal.getPipelines();
 }
 
 module.exports = {
     createPipeline,
     processPipeline,
+    retryPipeline,
     getAllPipelines
 };

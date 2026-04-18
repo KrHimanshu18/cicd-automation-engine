@@ -64,15 +64,23 @@ describe('Pipeline API Tests', () => {
   });
 
   test('Retry BUILD success', async () => {
+
     runCommand
       .mockResolvedValueOnce("clone success")
-      .mockRejectedValueOnce("installl failed") // triggers AI fix
+      .mockRejectedValueOnce("installl failed");
+
+    const firstRun = await request(app).post(`/run/${pipelineId}`);
+
+    expect(firstRun.body.status).toBe("FAILED");
+    expect(firstRun.body.fixCommand).toBe("npm install");
+
+    runCommand
       .mockResolvedValueOnce("retry success")
       .mockResolvedValueOnce("test success");
 
-    const res = await request(app).post(`/run/${pipelineId}`);
+    const retry = await request(app).post(`/retry/${pipelineId}`);
 
-    expect(res.body.status).toBe("SUCCESS");
+    expect(retry.body.status).toBe("SUCCESS");
   });
 
 });

@@ -68,9 +68,9 @@ app.post("/retry/:id", async (req, res) => {
     try {
         const pipelineId = req.params.id;
 
-        console.log("Retrying pipeline:", pipelineId);
+        console.log("Retrying pipeline with fix:", pipelineId);
 
-        const result = await bll.processPipeline(pipelineId);
+        const result = await bll.retryPipeline(pipelineId);
 
         res.json(result);
 

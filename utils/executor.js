@@ -7,7 +7,6 @@ function runCommand(command, cwd = null) {
             const output = (stdout || "") + "\n" + (stderr || "");
 
             if (error) {
-                // Reject with Error object (important for analyzer + tests)
                 return reject(new Error(output));
             }
 

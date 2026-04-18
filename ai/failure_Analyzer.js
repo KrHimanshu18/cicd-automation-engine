@@ -18,21 +18,26 @@ function similarity(a, b) {
 function mlAnalyze(log) {
     const msg = log.toLowerCase();
 
-    // Missing script
-    if (msg.includes("missing script")) {
-        return {
-            type: "Script Error",
-            suggestion: "Check package.json scripts",
-            fixCommand: null
-        };
-    }
-
-    // Module not found
+    // Dependency issues
     if (msg.includes("cannot find module") || msg.includes("module not found")) {
         return {
             type: "Dependency Error",
-            suggestion: "Run npm install",
+            suggestion: "Missing dependency. Run npm install",
             fixCommand: "npm install"
+        };
+    }
+
+    // Database issues
+    if (
+        msg.includes("sql") ||
+        msg.includes("database") ||
+        msg.includes("connection refused") ||
+        msg.includes("er_access_denied_error")
+    ) {
+        return {
+            type: "Database Error",
+            suggestion: "Check DB connection, credentials, or DB server status",
+            fixCommand: null
         };
     }
 
@@ -41,11 +46,37 @@ function mlAnalyze(log) {
 
 // ---------------- MAIN ANALYZER ----------------
 function analyzeFailure(log) {
+    console.log("[DEBUG] Incoming error:", log);
     const msg = log.toLowerCase();
 
-    // ---------------- RULE-BASED ----------------
+    // ---------------- SYNTAX ERRORS ----------------
+    if (
+        msg.includes("syntaxerror") ||
+        msg.includes("unexpected token") ||
+        msg.includes("missing ;") ||
+        msg.includes("parse error")
+    ) {
+        return {
+            type: "Syntax Error",
+            suggestion: "Check code syntax (missing brackets, semicolons, etc.)",
+            fixCommand: null
+        };
+    }
 
-    // Test typo
+    // ---------------- LOGIC ERRORS ----------------
+    if (
+        msg.includes("assertion failed") ||
+        msg.includes("expected") ||
+        msg.includes("undefined is not a function")
+    ) {
+        return {
+            type: "Logic Error",
+            suggestion: "Fix business logic or test expectations",
+            fixCommand: null
+        };
+    }
+
+    // ---------------- TEST TYPO ----------------
     if (msg.includes("testtt") || msg.includes("tset")) {
         return {
             type: "Test Error",
@@ -54,7 +85,7 @@ function analyzeFailure(log) {
         };
     }
 
-    // Install typo
+    // ---------------- INSTALL TYPO ----------------
     if (msg.includes("installl") || msg.includes("installll")) {
         return {
             type: "Build Error",
@@ -63,7 +94,7 @@ function analyzeFailure(log) {
         };
     }
 
-    // Command not found
+    // ---------------- COMMAND NOT FOUND ----------------
     if (msg.includes("not recognized") || msg.includes("command not found")) {
         if (msg.includes("test")) {
             return {
@@ -82,13 +113,8 @@ function analyzeFailure(log) {
         }
     }
 
-    // ---------------- FUZZY MATCHING ----------------
-
-    const validCommands = [
-        "npm install",
-        "npm test",
-        "npm run build"
-    ];
+    // ---------------- FUZZY MATCH ----------------
+    const validCommands = ["npm install", "npm test", "npm run build"];
 
     let detectedCommand = "";
 
@@ -106,7 +132,6 @@ function analyzeFailure(log) {
 
     for (let cmd of validCommands) {
         const score = similarity(detectedCommand, cmd);
-
         if (score > bestScore) {
             bestScore = score;
             bestMatch = cmd;
@@ -121,13 +146,11 @@ function analyzeFailure(log) {
         };
     }
 
-    // ---------------- ML-LIKE LAYER ----------------
-
+    // ---------------- ML LAYER ----------------
     const mlResult = mlAnalyze(log);
     if (mlResult) return mlResult;
 
     // ---------------- DEFAULT ----------------
-
     return {
         type: "Unknown",
         suggestion: "Check logs manually",
