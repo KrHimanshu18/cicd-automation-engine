@@ -151,30 +151,24 @@ async function runPipeline() {
 
   const data = await res.json();
 
-  // -------- HANDLE RESPONSE -------- //
+  // -------- SUCCESS --------
+  if (data.status === "SUCCESS") {
 
-if (data.status === "SUCCESS") {
+    setStatus("buildStatus", "Success", "success");
+    setStatus("testStatus", "Success", "success");
+    setStatus("deployStatus", "Success", "success");
 
-  setStatus("buildStatus", "Success", "success");
-  setStatus("testStatus", "Success", "success");
-  setStatus("deployStatus", "Success", "success");
+    log("[SUCCESS] Pipeline completed");
 
-  log("[SUCCESS] Pipeline completed");
-  notify("Pipeline SUCCESS");
+    if (data.logs) {
+      data.logs.forEach(l => log(l));
+    }
 
-}
+    notify("Pipeline SUCCESS");
+  }
 
-else if (data.status === "RECOVERED") {
-
-  setStatus("buildStatus", "Recovered", "recovered");
-  setStatus("testStatus", "Success", "success");
-  setStatus("deployStatus", "Success", "success");
-
-  log("[RECOVERED] Pipeline fixed by AI");
-
-  notify("Pipeline RECOVERED by AI");
-
-} else {
+  // -------- FAILURE --------
+  else {
 
     if (data.stage === "CLONE") {
       setStatus("buildStatus", "Failed", "failed");
@@ -190,18 +184,7 @@ else if (data.status === "RECOVERED") {
     }
 
     log(`[ERROR] ${data.stage} failed`);
-    notify("Pipeline FAILED");
-    if (data.error) {
-    log("Error: " + data.error);
-  }
 
-    if (data.type) {
-    log("Type: " + data.type);
-}
-
-    if (data.fix) {
-    log("Fix: " + data.fix);
-}
     if (data.logs) {
       data.logs.forEach(l => log(l));
     }

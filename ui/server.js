@@ -29,7 +29,7 @@ app.post("/pipeline", async (req, res) => {
 
     } catch (err) {
         console.error("Error creating pipeline:", err.message);
-        res.status(100).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -40,17 +40,11 @@ app.post("/run/:id", async (req, res) => {
 
         const result = await bll.processPipeline(pipelineId);
 
-        res.json({
-        status: result.status,
-        stage: result.stage,
-        error: result.error || null,
-        type: result.type || null,
-        fix: result.fix || null
-});
+        res.json(result);
 
     } catch (err) {
         console.error("Error running pipeline:", err.message);
-        res.status(100).json({
+        res.status(500).json({
             status: "FAILED",   
             stage: "UNKNOWN",
             error: err.message
@@ -65,7 +59,7 @@ app.get("/pipelines", async (req, res) => {
         res.json(pipelines);
     } catch (err) {
         console.error("Error fetching pipelines:", err.message);
-        res.status(100).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -74,7 +68,7 @@ app.post("/retry/:id", async (req, res) => {
     try {
         const pipelineId = req.params.id;
 
-        console.log("Retrying pipeline:", pipelineId);
+        console.log("Retrying pipeline with fix:", pipelineId);
 
         const result = await bll.retryPipeline(pipelineId);
 
@@ -82,12 +76,7 @@ app.post("/retry/:id", async (req, res) => {
 
     } catch (err) {
         console.error("Retry error:", err.message);
-
-        res.status(100).json({
-            status: "FAILED",
-            stage: "UNKNOWN",   // 🔥 ADD THIS
-            error: err.message
-        });
+        res.status(500).json({ error: err.message });
     }
 });
 
